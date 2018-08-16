@@ -5,9 +5,9 @@
 -- if required make it an Arnold Standard Surface material
 -- make sure thin walled is ticked
 -- make object not opaque
--- use the same controller for the visibility track on the materials transmission 
--- 
--- future options: support other materials
+--  use the same controller for the visibility track on the materials transmission 
+--  
+--  future options: support other materials
 
 -- loop through objects
 for i in objects do
@@ -23,7 +23,30 @@ for i in objects do
 
   -- set thin walled
   i.material.thin_walled=true
-
+	 
+  -- check if there is an arnold properties modifier already
+  j=-1
+  for k in i.modifiers do
+  (
+   if (classof k) == ArnoldGeometryPropertiesModifier then
+   (
+     j=k
+     k.enable_general_options=true
+     k.opaque=false
+     break
+   )
+  )
+  if j==-1 then
+  (
+   -- if not add one
+	  format "adding arnold properties modifier\n"
+   u=ArnoldGeometryPropertiesModifier()
+   addmodifier i u
+   -- and uncheck opaque (that gets rid of shadows)
+   u.enable_general_options=true
+   u.opaque=false
+  )
+  
   -- use the same controller as the visibility track but ...
   u=copy t
   -- invert all the keys
