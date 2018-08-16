@@ -60,17 +60,16 @@ for i in objects do
 	
    animate on
    (	   
-   at time s.time 
-   (
-	setControllerValue u (1-s.value) true #absolute
-	CommitControllerValue u
+    at time s.time 
+    (
+     setControllerValue u (1-s.value) true #absolute
+    )
+    --s=getkey u k
+    --format "after %\n" s.value
    )
-   --s=getkey u k
-   --format "after %\n" s.value
-   )
- )
-
- -- assign it
+  )
+  CommitControllerValue u
+  -- assign it
   i.material.transmission.controller=u
  )
 )
