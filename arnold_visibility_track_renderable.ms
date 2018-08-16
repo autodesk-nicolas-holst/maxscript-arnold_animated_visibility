@@ -33,7 +33,7 @@ for i in objects do
    --s=getkey u k
    --format "mat - before %\n" s.value
    s=getkey t k
-   format "vis - before %\n" s.value
+   --format "vis - before %\n" s.value
 	
    animate on
    (	   
@@ -42,8 +42,8 @@ for i in objects do
 	setControllerValue u (1-s.value) true #absolute
 	CommitControllerValue u
    )
-   s=getkey u k
-   format "after %\n" s.value
+   --s=getkey u k
+   --format "after %\n" s.value
    )
  )
 
