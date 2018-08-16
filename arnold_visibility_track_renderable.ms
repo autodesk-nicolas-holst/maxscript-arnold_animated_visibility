@@ -33,7 +33,7 @@ for i in objects do
      j=k
      k.enable_general_options=true
      k.opaque=false
-     break
+     -- removed "break" at this point so it can cope with multiple arnold property modfiers, but why would you have multiple ones?
    )
   )
   if j==-1 then
