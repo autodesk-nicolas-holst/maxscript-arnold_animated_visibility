@@ -25,7 +25,7 @@ for i in objects do
 
   -- need to have a map in the cutout slot, using colour selection OSL map
   o=OSLMap()
-  o.OSLPath = "{D0FAAD4C-2A0D-427A-879C-975B104B6443}"
+  o.OSLPath ="c:/program files/autodesk/3ds max 2019/osl/Color1of5.osl"
   o.I0=color 0 0 0 255
   o.I1=color 255 255 255 255
   i.material.cutout_map=o
