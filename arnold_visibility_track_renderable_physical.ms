@@ -23,11 +23,9 @@ for i in objects do
   m=copy i.material
   i.material=m  
 
-  -- need to have a map in the cutout slot, using colour selection OSL map
-  o=OSLMap()
-  o.OSLPath ="c:/program files/autodesk/3ds max 2019/osl/Color1of5.osl"
-  o.I0=color 0 0 0 255
-  o.I1=color 255 255 255 255
+  -- need to have a map in the cutout slot, using color map
+  o=ColorMap()
+  o.solidcolor=color 255 255 255 255
   i.material.cutout_map=o
 	 
   -- as visibility and transmission are opposites, invert the value of all the keys
@@ -42,7 +40,14 @@ for i in objects do
     -- at the given time	   
     at time s.time 
     (
-     i.material.cutout_map.index=s.value
+		if s.value==0 then
+		(
+			i.material.cutout_map.solidcolor=color 0 0 0 255
+		)
+		else
+		(
+			i.material.cutout_map.solidcolor=color 255 255 255 255
+		)
     )
    )
   )
