@@ -51,9 +51,11 @@ fn do_a_material i_material visibility_track =
 	)
 	else
 	(
-		format "Skippded replacing material % because it already has a cut out map.\n" i_material.name
+		format "Skipped replacing material % because it already has a cut out map.\n" i_material.name
+		return i_material
 	)
 )
+
 
 -- loop through all geometry objects
 for i in geometry do
