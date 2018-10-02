@@ -25,7 +25,6 @@ fn do_a_material i_material visibility_track =
 		o.solidcolor=color 255 255 255 255
 		mat.cutout_map=o
 	 
-		-- as visibility and transmission are opposites, invert the value of all the keys
 		j=numkeys visibility_track
 		-- loop through all keys
 		for k = 1 to j do 
