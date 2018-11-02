@@ -16,15 +16,6 @@ macroScript maxVisObj category:"maxVisObj" (
 -- amd added support for arnold standard surface
 
 
-
-fn do_a_standard_material i_material visibility_track =
-(
-	local mat=i_material
-	
-	format "standard material is currently not supported\n"
-	return mat
-)
-
 fn do_an_arnold_material i_material i_object visibility_track =
 (
 	local mat=i_material
@@ -64,7 +55,7 @@ fn do_an_arnold_material i_material i_object visibility_track =
 		)
   
 
-  		format "Arnold standard surface %\n" mat.name
+  		--format "Arnold standard surface %\n" mat.name
 		-- need to have a map in the cutout slot, using color map
 		o=ColorMap()
 		o.solidcolor=color 255 255 255 255
@@ -95,7 +86,7 @@ fn do_an_arnold_material i_material i_object visibility_track =
 	)
 	else
 	(
-		format "Skipped replacing material % because it already has a cut out map.\n" mat.name
+		--format "Skipped replacing material % because it already has a cut out map.\n" mat.name
 	)
 	return mat
 )
@@ -112,7 +103,7 @@ fn do_a_physical_material i_material visibility_track =
 	(
 		mat=copy i_material
 
-		format "Physical %\n" mat.name
+		--format "Physical %\n" mat.name
 		-- need to have a map in the cutout slot, using color map
 		o=ColorMap()
 		o.solidcolor=color 255 255 255 255
@@ -143,7 +134,7 @@ fn do_a_physical_material i_material visibility_track =
 	)
 	else
 	(
-		format "Skipped replacing material % because it already has a cut out map.\n" mat.name
+		--format "Skipped replacing material % because it already has a cut out map.\n" mat.name
 	)
 	return mat
 )
@@ -153,10 +144,6 @@ fn do_a_material i_material i_object visibility_track =
 (
 	local mat=i_material -- this is set in case the material isn't one we handle,, otherwise we'd set it to undefined...
 	
-	if classof mat==StandardMaterial then
-	(
-		mat=do_a_standard_material mat visibility_track
-	)
 	if classof mat==ai_standard_surface then
 	(
 		mat=do_an_arnold_material mat i_object visibility_track
@@ -182,24 +169,24 @@ fn handle_a_material_type i_material i_object visibility_track =
 	(
 		mat=copy i_material
 		
-		format "Blend %\n" mat.name
+		--format "Blend %\n" mat.name
 		-- do the two sub materials called map1 and map2
 		mat.map1 = handle_a_material_type mat.map1 i_object visibility_track
 		mat.map2 = handle_a_material_type mat.map2 i_object visibility_track
 
-		format "\n"
+		--format "\n"
 	)
 
 	if mat==undefined and classof i_material==DoubleSided then
 	(
 		mat=copy i_material
 		
-		format "DoubleSided %\n" mat.name
+		--format "DoubleSided %\n" mat.name
 		-- do the two sub materials called material1 and material2
 		mat.material1 = handle_a_material_type mat.material1 i_object visibility_track
 		mat.material2 = handle_a_material_type mat.material2 i_object visibility_track
 
-		format "\n"
+		--format "\n"
 	)
 
 	-- now the whole thing again in case there appear inside a multimaterial
@@ -207,14 +194,14 @@ fn handle_a_material_type i_material i_object visibility_track =
 	(
 		mat=copy i_material
 		
-		format "MultiMaterial %\n" mat.name
+		--format "MultiMaterial %\n" mat.name
 		for h = 1 to mat.numsubs do
 		(
-			format "SubMaterial % %\n" h mat[h]
+			--format "SubMaterial % %\n" h mat[h]
 
 			mat.material[h]=handle_a_material_type mat.material[h] i_object visibility_track
 		)
-		format "\n"
+		--format "\n"
 	)
 
 	-- main material, if this doesn't match the supported material types it just gives us the same material back
@@ -244,7 +231,7 @@ fn do_apply_arnold_visibility =
 		local visibility_track=getviscontroller i
 		if visibility_track != undefined then
 		(
-			format "found visibility controller on %\n" i
+			--format "found visibility controller on %\n" i
 			cnt=cnt+1
 
 			i.material=handle_a_material_type i.material i visibility_track
