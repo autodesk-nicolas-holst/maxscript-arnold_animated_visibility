@@ -1,6 +1,4 @@
-
 macroScript maxVisObj category:"maxVisObj" (
-(
 
 -- animated visibility track applied to Arnold renders
 -- 
@@ -13,11 +11,24 @@ macroScript maxVisObj category:"maxVisObj" (
 --  use the same controller for the visibility track on the materials transmission 
 
 -- refactored the whole thing
--- amd added support for arnold standard surface
+-- and added support for arnold standard surface
+-- NEW: use Arnold string so this also works as a macroscript which runs before MaxtoA is initialised
+
+
+global quiet_mode=1
+
+fn do_a_standard_material i_material visibility_track =
+(
+	local mat=i_material
+	
+	if quiet_mode!=1 then format "standard material is currently not supported\n"
+	return mat
+)
 
 
 fn do_an_arnold_material i_material i_object visibility_track =
 (
+	local j,k
 	local mat=i_material
 	
 	-- Arnold surface shader -> use a colormap in the cutout slot
@@ -47,7 +58,7 @@ fn do_an_arnold_material i_material i_object visibility_track =
 		(
 			--format "adding arnold properties modifier\n"
 			-- if not add one
-			u=ArnoldGeometryPropertiesModifier()
+			local u=ArnoldGeometryPropertiesModifier()
 			addmodifier i_object u
 			-- and uncheck opaque (that gets rid of shadows)
 			u.enable_general_options=true
@@ -55,17 +66,17 @@ fn do_an_arnold_material i_material i_object visibility_track =
 		)
   
 
-  		--format "Arnold standard surface %\n" mat.name
+  		if quiet_mode!=1 then format "Arnold standard surface %\n" mat.name
 		-- need to have a map in the cutout slot, using color map
-		o=ColorMap()
+		local o=ColorMap()
 		o.solidcolor=color 255 255 255 255
 		mat.opacity_shader=o
 	 
-		local j=numkeys visibility_track
+		j=numkeys visibility_track
 		-- loop through all keys
 		for k = 1 to j do 
 		(
-			s=getkey visibility_track k
+			local s=getkey visibility_track k
 			-- need to have animate on to set the keys as expected	
 			animate on
 			(
@@ -86,7 +97,7 @@ fn do_an_arnold_material i_material i_object visibility_track =
 	)
 	else
 	(
-		--format "Skipped replacing material % because it already has a cut out map.\n" mat.name
+		if quiet_mode!=1 then format "Skipped replacing material % because it already has a cut out map.\n" mat.name
 	)
 	return mat
 )
@@ -95,6 +106,7 @@ fn do_an_arnold_material i_material i_object visibility_track =
 
 fn do_a_physical_material i_material visibility_track =
 (
+	local j,k
 	local mat=i_material
 	-- physical material -> use a colormap in the cutout slot
 	-- only do this if there isn't already a cutout map
@@ -103,17 +115,17 @@ fn do_a_physical_material i_material visibility_track =
 	(
 		mat=copy i_material
 
-		--format "Physical %\n" mat.name
+		if quiet_mode!=1 then format "Physical %\n" mat.name
 		-- need to have a map in the cutout slot, using color map
-		o=ColorMap()
+		local o=ColorMap()
 		o.solidcolor=color 255 255 255 255
 		mat.cutout_map=o
 	 
-		local j=numkeys visibility_track
+		j=numkeys visibility_track
 		-- loop through all keys
 		for k = 1 to j do 
 		(
-			s=getkey visibility_track k
+			local s=getkey visibility_track k
 			-- need to have animate on to set the keys as expected	
 			animate on
 			(
@@ -134,7 +146,7 @@ fn do_a_physical_material i_material visibility_track =
 	)
 	else
 	(
-		--format "Skipped replacing material % because it already has a cut out map.\n" mat.name
+		if quiet_mode!=1 then format "Skipped replacing material % because it already has a cut out map.\n" mat.name
 	)
 	return mat
 )
@@ -144,10 +156,23 @@ fn do_a_material i_material i_object visibility_track =
 (
 	local mat=i_material -- this is set in case the material isn't one we handle,, otherwise we'd set it to undefined...
 	
-	if classof mat==ai_standard_surface then
+	if classof mat==StandardMaterial then
 	(
+		mat=do_a_standard_material mat visibility_track
+	)
+	-- this works if we run the code as a normal script
+	--if classof mat==ai_standard_surface then 
+	--(
+	--	format "doing Arnold standard surface\n"
+	--	mat=do_an_arnold_material mat i_object visibility_track
+	--)
+    -- this works both from a normal script and from within a macroscript (it looks like MactoA hasn't been loaded when the macroscripts get evaluated)
+	if ((classof mat) as string)=="ai_standard_surface" then 
+	(
+		if quiet_mode!=1 then format "doing Arnold standard surface\n"
 		mat=do_an_arnold_material mat i_object visibility_track
 	)
+
 
 	-- physical material -> use a colormap in the cutout slot
 	if classof mat==PhysicalMaterial then
@@ -169,24 +194,24 @@ fn handle_a_material_type i_material i_object visibility_track =
 	(
 		mat=copy i_material
 		
-		--format "Blend %\n" mat.name
+		if quiet_mode!=1 then format "Blend %\n" mat.name
 		-- do the two sub materials called map1 and map2
 		mat.map1 = handle_a_material_type mat.map1 i_object visibility_track
 		mat.map2 = handle_a_material_type mat.map2 i_object visibility_track
 
-		--format "\n"
+		if quiet_mode!=1 then format "\n"
 	)
 
 	if mat==undefined and classof i_material==DoubleSided then
 	(
 		mat=copy i_material
 		
-		--format "DoubleSided %\n" mat.name
+		if quiet_mode!=1 then format "DoubleSided %\n" mat.name
 		-- do the two sub materials called material1 and material2
 		mat.material1 = handle_a_material_type mat.material1 i_object visibility_track
 		mat.material2 = handle_a_material_type mat.material2 i_object visibility_track
 
-		--format "\n"
+		format "\n"
 	)
 
 	-- now the whole thing again in case there appear inside a multimaterial
@@ -194,14 +219,14 @@ fn handle_a_material_type i_material i_object visibility_track =
 	(
 		mat=copy i_material
 		
-		--format "MultiMaterial %\n" mat.name
+		if quiet_mode!=1 then format "MultiMaterial %\n" mat.name
 		for h = 1 to mat.numsubs do
 		(
-			--format "SubMaterial % %\n" h mat[h]
+			if quiet_mode!=1 then format "SubMaterial % %\n" h mat[h]
 
 			mat.material[h]=handle_a_material_type mat.material[h] i_object visibility_track
 		)
-		--format "\n"
+		if quiet_mode!=1 then format "\n"
 	)
 
 	-- main material, if this doesn't match the supported material types it just gives us the same material back
@@ -216,6 +241,8 @@ fn handle_a_material_type i_material i_object visibility_track =
 
 fn do_apply_arnold_visibility =
 (
+	local i
+	
 	-- first ensure that the legacy map support is set
 	if 	(renderers.current as string)=="Arnold:Arnold" then
 	(
@@ -231,7 +258,7 @@ fn do_apply_arnold_visibility =
 		local visibility_track=getviscontroller i
 		if visibility_track != undefined then
 		(
-			--format "found visibility controller on %\n" i
+			if quiet_mode!=1 then format "found visibility controller on %\n" i
 			cnt=cnt+1
 
 			i.material=handle_a_material_type i.material i visibility_track
@@ -245,6 +272,4 @@ fn do_apply_arnold_visibility =
 )
 
 do_apply_arnold_visibility()
-
-)
 )
