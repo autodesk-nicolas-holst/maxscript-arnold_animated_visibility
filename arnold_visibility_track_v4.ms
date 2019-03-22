@@ -284,7 +284,7 @@ fn handle_a_material_type i_material i_object visibility_track =
 	(
 		mat=copy i_material
 		
-		format "MultiMaterial "+(mat.name as string)+"\n" 
+		debug_format "MultiMaterial "+(mat.name as string)+"\n" 
 		for h = 1 to mat.numsubs do
 		(
 			debug_format 2 #("SubMaterial % %\n",h,mat[h])
