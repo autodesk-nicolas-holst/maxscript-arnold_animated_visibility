@@ -207,10 +207,10 @@ fn do_a_physical_material i_material visibility_track =
 			s=getkey visibility_track k
 			if s.time==0 then
 			(
-				key_at_time_zero=1
+				key_at_time_zero=-1
 			)
 		)
-		if key_at_time_zero==-1 then
+		if key_at_time_zero==1 then
 		(
 			selectkeys mat.cutout_map.solidcolor.controller 0
 			deletekeys mat.cutout_map.solidcolor.controller #selection
@@ -284,7 +284,7 @@ fn handle_a_material_type i_material i_object visibility_track =
 	(
 		mat=copy i_material
 		
-		debug_format "MultiMaterial "+(mat.name as string)+"\n" 
+		debug_format 2 #("MultiMaterial %\n",mat.name) 
 		for h = 1 to mat.numsubs do
 		(
 			debug_format 2 #("SubMaterial % %\n",h,mat[h])
@@ -317,6 +317,10 @@ fn do_apply_arnold_visibility =
 	-- loop through all geometry objects
 	for i in geometry do
 	(
+		if isgroupmember i then
+		(
+			debug_format 1 #("NOT SUPPORTED - Object is part of a group!\n")
+		)
 		-- check for the presence of a visibity controller
 		local visibility_track=getviscontroller i
 		if visibility_track != undefined then
