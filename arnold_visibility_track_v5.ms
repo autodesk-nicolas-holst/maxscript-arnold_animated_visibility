@@ -313,10 +313,13 @@ fn find_visibility_track_with_keys o =
 	-- start by checking if the object has a visibility track
 	local v=getviscontroller o 
 
-	-- ignore if there are no keys on the controller
-	if (numkeys v)==0 then
+	if v!= undefined then
 	(
-		v=undefined
+		-- ignore if there are no keys on the controller
+		if (numkeys v)==0 then
+		(
+			v=undefined
+		)
 	)
 	
 	-- same logic for groups and for hierarchies as groups are a special form of hierarchy
